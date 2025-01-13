@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const clothingItemSchema = mongoose.Schema({
   name: {
@@ -9,6 +10,7 @@ const clothingItemSchema = mongoose.Schema({
   },
   weather: {
     type: String,
+    required: [true, "The weather field is required."],
     enum: ["hot", "warm", "cold"],
   },
 
@@ -25,7 +27,7 @@ const clothingItemSchema = mongoose.Schema({
   creator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
-    required: true,
+    // required: true,
   },
   likes: [
     {
@@ -40,4 +42,4 @@ const clothingItemSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("user", clothingItemSchema);
+module.exports = mongoose.model("clothingItem", clothingItemSchema);
