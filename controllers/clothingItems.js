@@ -8,14 +8,17 @@ const getItems = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
+  const { _id } = req.user;
 
-  Item.create({ name, weather, imageUrl })
+  Item.create({ name, weather, imageUrl, creator: _id })
     .then((item) => {
       res.status(201).send(item);
     })
@@ -23,7 +26,9 @@ const createItem = (req, res) => {
       console.error(err);
       if (err.name === "ValidationError")
         return res.status(400).send({ message: err.message });
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -42,7 +47,9 @@ const deleteItem = (req, res) => {
         return res
           .status(404)
           .send({ message: "Requested resource not found" });
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -60,7 +67,9 @@ const updateItem = (req, res) => {
         return res
           .status(404)
           .send({ message: "Requested resource not found" });
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
