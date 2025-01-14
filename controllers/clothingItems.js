@@ -1,5 +1,11 @@
 const clothingItem = require("../models/clothingItem");
 const Item = require("../models/clothingItem");
+const {
+  GENERIC_ERROR,
+  VALIDATION_ERROR,
+  CAST_ERROR,
+  DOCUMENT_NOT_FOUND_ERROR,
+} = require("../utils/errors");
 
 const getItems = (req, res) => {
   Item.find({})
@@ -9,7 +15,7 @@ const getItems = (req, res) => {
     .catch((err) => {
       console.error(err);
       return res
-        .status(500)
+        .status(GENERIC_ERROR)
         .send({ message: "An error has occurred on the server." });
     });
 };
@@ -25,9 +31,9 @@ const createItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError")
-        return res.status(400).send({ message: err.message });
+        return res.status(VALIDATION_ERROR).send({ message: err.message });
       return res
-        .status(500)
+        .status(GENERIC_ERROR)
         .send({ message: "An error has occurred on the server." });
     });
 };
@@ -42,13 +48,13 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError")
-        return res.status(400).send({ message: err.message });
+        return res.status(CAST_ERROR).send({ message: err.message });
       else if (err.name === "DocumentNotFoundError")
         return res
-          .status(404)
+          .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
       return res
-        .status(500)
+        .status(GENERIC_ERROR)
         .send({ message: "An error has occurred on the server." });
     });
 };
@@ -62,13 +68,13 @@ const updateItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError")
-        return res.status(400).send({ message: err.message });
+        return res.status(CAST_ERROR).send({ message: err.message });
       else if (err.name === "DocumentNotFoundError")
         return res
-          .status(404)
+          .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
       return res
-        .status(500)
+        .status(GENERIC_ERROR)
         .send({ message: "An error has occurred on the server." });
     });
 };
