@@ -1,4 +1,3 @@
-const clothingItem = require("../models/clothingItem");
 const Item = require("../models/clothingItem");
 const {
   GENERIC_ERROR,
@@ -49,7 +48,7 @@ const deleteItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError")
         return res.status(CAST_ERROR).send({ message: err.message });
-      else if (err.name === "DocumentNotFoundError")
+      if (err.name === "DocumentNotFoundError")
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
@@ -69,7 +68,7 @@ const updateItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError")
         return res.status(CAST_ERROR).send({ message: err.message });
-      else if (err.name === "DocumentNotFoundError")
+      if (err.name === "DocumentNotFoundError")
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
@@ -91,7 +90,7 @@ const likeItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError")
         return res.status(CAST_ERROR).send({ message: err.message });
-      else if (err.name === "DocumentNotFoundError")
+      if (err.name === "DocumentNotFoundError")
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
@@ -113,7 +112,7 @@ const unlikeItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError")
         return res.status(CAST_ERROR).send({ message: err.message });
-      else if (err.name === "DocumentNotFoundError")
+      if (err.name === "DocumentNotFoundError")
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
