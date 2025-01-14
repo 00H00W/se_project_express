@@ -22,9 +22,9 @@ const getItems = (req, res) => {
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
-  const { _id } = req.user;
+  const creator = req.user._id;
 
-  Item.create({ name, weather, imageUrl, creator: _id })
+  Item.create({ name, weather, imageUrl, creator })
     .then((item) => {
       res.status(201).send(item);
     })
@@ -43,7 +43,7 @@ const deleteItem = (req, res) => {
   Item.findByIdAndRemove(itemId)
     .orFail()
     .then((item) => {
-      res.status(204).send(item);
+      res.status(200).send(item);
     })
     .catch((err) => {
       console.error(err);
@@ -79,4 +79,55 @@ const updateItem = (req, res) => {
     });
 };
 
-module.exports = { getItems, createItem, deleteItem, updateItem };
+const likeItem = (req, res) => {
+  Item.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send(item))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError")
+        return res.status(CAST_ERROR).send({ message: err.message });
+      else if (err.name === "DocumentNotFoundError")
+        return res
+          .status(DOCUMENT_NOT_FOUND_ERROR)
+          .send({ message: "Requested resource not found" });
+      return res
+        .status(GENERIC_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+
+const unlikeItem = (req, res) => {
+  Item.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send(item))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError")
+        return res.status(CAST_ERROR).send({ message: err.message });
+      else if (err.name === "DocumentNotFoundError")
+        return res
+          .status(DOCUMENT_NOT_FOUND_ERROR)
+          .send({ message: "Requested resource not found" });
+      return res
+        .status(GENERIC_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+
+module.exports = {
+  getItems,
+  createItem,
+  deleteItem,
+  updateItem,
+  likeItem,
+  unlikeItem,
+};
