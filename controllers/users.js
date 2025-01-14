@@ -1,9 +1,8 @@
 const User = require("../models/user");
 const {
   GENERIC_ERROR,
-  VALIDATION_ERROR,
-  CAST_ERROR,
-  DOCUMENT_NOT_FOUND_ERROR,
+  BAD_REQUEST_ERROR,
+  PAGE_NOT_FOUND_ERROR,
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -29,7 +28,7 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError")
-        return res.status(VALIDATION_ERROR).send({ message: err.message });
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       return res
         .status(GENERIC_ERROR)
         .send({ message: "An error has occurred on the server." });
@@ -46,10 +45,10 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError")
-        return res.status(CAST_ERROR).send({ message: err.message });
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       if (err.name === "DocumentNotFoundError")
         return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
+          .status(PAGE_NOT_FOUND_ERRORs)
           .send({ message: "Requested resource not found" });
       return res
         .status(GENERIC_ERROR)
