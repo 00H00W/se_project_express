@@ -48,7 +48,7 @@ const getUser = (req, res) => {
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       if (err.name === "DocumentNotFoundError")
         return res
-          .status(PAGE_NOT_FOUND_ERRORs)
+          .status(PAGE_NOT_FOUND_ERROR)
           .send({ message: "Requested resource not found" });
       return res
         .status(GENERIC_ERROR)
