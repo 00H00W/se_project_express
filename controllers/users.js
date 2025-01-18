@@ -28,8 +28,10 @@ const createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
-      user.password = undefined; // delete user.password does not work.
-      return res.status(201).send({ user });
+      // delete user.password does not work.
+      const returnData = user;
+      returnData.password = undefined;
+      return res.status(201).send({ returnData });
     })
     .catch((err) => {
       console.error(err);

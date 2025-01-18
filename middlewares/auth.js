@@ -21,4 +21,5 @@ module.exports = (req, res, next) => {
   // pass the payload to further requests
   req.user = payload;
   next();
+  return undefined; // required to make the linter happy
 };
