@@ -3,6 +3,6 @@ const userController = require("../controllers/users");
 const auth = require("../middlewares/auth");
 
 router.use(auth);
-router.get("/:userId", userController.getUser);
+router.get("/me", userController.getCurrentUser);
 
 module.exports = router;
