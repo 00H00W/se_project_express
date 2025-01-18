@@ -38,13 +38,19 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  Item.findByIdAndRemove(itemId)
+  Item.findById(itemId)
     .orFail()
     .then((item) => {
-      res.status(200).send(item);
+      if (item.owner._id === req.user) {
+        Item.delete(item);
+        return res.status(200).send(item);
+      }
+      throw new Error("Authorization error");
     })
     .catch((err) => {
       console.error(err);
+      if (err.name === "Authorization error")
+        return res.status(403).send({ message: err.message });
       if (err.name === "CastError")
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       if (err.name === "DocumentNotFoundError")
