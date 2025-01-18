@@ -1,5 +1,7 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const { JWT_SECRET } = require("../utils/config");
 const {
   GENERIC_ERROR,
   BAD_REQUEST_ERROR,
@@ -48,6 +50,30 @@ const getUser = (req, res) => {
     .orFail()
     .then((user) => {
       res.status(200).send(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError")
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
+      if (err.name === "DocumentNotFoundError")
+        return res
+          .status(PAGE_NOT_FOUND_ERROR)
+          .send({ message: "Requested resource not found" });
+      return res
+        .status(GENERIC_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
     })
     .catch((err) => {
       console.error(err);
