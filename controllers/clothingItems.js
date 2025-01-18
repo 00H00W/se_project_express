@@ -38,14 +38,20 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+
+  // I do not think this is the correct way to solve this
+  // I could not compare the item.owner and req.user properties.
   Item.findById(itemId)
     .orFail()
     .then((item) => {
-      if (item.owner._id === req.user) {
-        Item.delete(item);
-        return res.status(200).send(item);
-      }
-      throw new Error("Authorization error");
+      Item.findOneAndDelete({ _id: itemId, owner: req.user })
+        .orFail()
+        .then((item) => {
+          return res.status(200).send(item);
+        })
+        .catch(() => {
+          return res.status(403).send({ message: "Authorization error" });
+        });
     })
     .catch((err) => {
       console.error(err);

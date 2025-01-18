@@ -28,8 +28,8 @@ const createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
-      delete user.password;
-      res.status(201).send(user);
+      user.password = undefined; // delete user.password does not work.
+      return res.status(201).send({ user });
     })
     .catch((err) => {
       console.error(err);
@@ -103,6 +103,14 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
+      if (err.name === "ValidationError")
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
+      if (err.message === "Cannot find user by credentials") {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.message === "Incorrect email or password") {
+        return res.status(401).send({ message: err.message });
+      }
       if (err.name === "CastError")
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       if (err.name === "DocumentNotFoundError")
