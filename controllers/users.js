@@ -65,6 +65,31 @@ const getCurrentUser = (req, res) => {
     });
 };
 
+const updateUser = (req, res) => {
+  const { name, avatar } = req.body;
+  User.findByIdAndUpdate(
+    req.user,
+    { name, avatar },
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      console.error(err);
+      if (err.code === 11000)
+        return res
+          .status(409)
+          .send({ message: "A user with this email already exists." });
+      if (err.name === "ValidationError")
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
+      return res
+        .status(GENERIC_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -89,4 +114,4 @@ const login = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getCurrentUser, login };
+module.exports = { getUsers, createUser, getCurrentUser, login, updateUser };
