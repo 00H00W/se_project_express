@@ -20,6 +20,7 @@ Functionality:
 - Node and Express
 - MongoDB connection and routing
 - RESTful API format
+- Bcrypt hashing and jsonwebtoken authorization
 - Postman Testing
 - ESLint configuration
 
