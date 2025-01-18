@@ -10,7 +10,9 @@ Functionality:
 
 - Create a MongoDB database for storing clothing items and users with schemas.
 - Format routes for the API using multiple routers to keep code clean.
-- Setup controllers for the user and item databases that implement CRUD.
+- Define controllers for the user and item databases that implement CRUD.
+- Account managing with email and password hashing.
+- Creates login tokens for controller authorization.
 - Error catching and response.
 
 ## Tech stack
