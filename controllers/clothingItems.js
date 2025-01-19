@@ -45,9 +45,7 @@ const deleteItem = (req, res) => {
     .then((item) => {
       if (req.user._id === String(item.owner)) {
         Item.findByIdAndDelete(itemId)
-          .then((item) => {
-            return res.status(200).send(item);
-          })
+          .then(() => res.status(200).send(item))
           .catch(console.error);
       } else {
         res.status(FORBIDDEN_ERROR).send({ message: "Authorization error" });
