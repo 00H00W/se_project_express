@@ -6,6 +6,8 @@ const {
   GENERIC_ERROR,
   BAD_REQUEST_ERROR,
   PAGE_NOT_FOUND_ERROR,
+  CONFLICT_ERROR,
+  UNAUTHENTICATED_ERROR,
 } = require("../utils/errors");
 
 const createUser = (req, res) => {
@@ -24,7 +26,7 @@ const createUser = (req, res) => {
       console.error(err);
       if (err.code === 11000)
         return res
-          .status(409)
+          .status(CONFLICT_ERROR)
           .send({ message: "A user with this email already exists." });
       if (err.name === "ValidationError")
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
@@ -68,10 +70,6 @@ const updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.error(err);
-      if (err.code === 11000)
-        return res
-          .status(409)
-          .send({ message: "A user with this email already exists." });
       if (err.name === "ValidationError")
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       return res
@@ -92,20 +90,12 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError")
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       if (err.message === "Cannot find user by credentials") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       }
       if (err.message === "Incorrect email or password") {
-        return res.status(401).send({ message: err.message });
+        return res.status(UNAUTHENTICATED_ERROR).send({ message: err.message });
       }
-      if (err.name === "CastError")
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-      if (err.name === "DocumentNotFoundError")
-        return res
-          .status(PAGE_NOT_FOUND_ERROR)
-          .send({ message: "Requested resource not found" });
       return res
         .status(GENERIC_ERROR)
         .send({ message: "An error has occurred on the server." });

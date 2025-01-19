@@ -3,6 +3,7 @@ const {
   GENERIC_ERROR,
   BAD_REQUEST_ERROR,
   PAGE_NOT_FOUND_ERROR,
+  FORBIDDEN_ERROR,
 } = require("../utils/errors");
 
 const getItems = (req, res) => {
@@ -39,8 +40,6 @@ const createItem = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  // I do not think this is the correct way to solve this
-  // I could not compare the item.owner and req.user properties.
   Item.findById(itemId)
     .orFail()
     .then((item) => {
@@ -51,13 +50,11 @@ const deleteItem = (req, res) => {
           })
           .catch(console.error);
       } else {
-        res.status(403).send({ message: "Authorization error" });
+        res.status(FORBIDDEN_ERROR).send({ message: "Authorization error" });
       }
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "Authorization error")
-        return res.status(403).send({ message: err.message });
       if (err.name === "CastError")
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       if (err.name === "DocumentNotFoundError")
