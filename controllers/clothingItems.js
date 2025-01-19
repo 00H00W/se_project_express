@@ -43,11 +43,16 @@ const deleteItem = (req, res) => {
   // I could not compare the item.owner and req.user properties.
   Item.findById(itemId)
     .orFail()
-    .then(() => {
-      Item.findOneAndDelete({ _id: itemId, owner: req.user })
-        .orFail()
-        .then((item) => res.status(200).send(item))
-        .catch(() => res.status(403).send({ message: "Authorization error" }));
+    .then((item) => {
+      if (req.user._id === String(item.owner)) {
+        Item.findByIdAndDelete(itemId)
+          .then((item) => {
+            return res.status(200).send(item);
+          })
+          .catch(console.error);
+      } else {
+        res.status(403).send({ message: "Authorization error" });
+      }
     })
     .catch((err) => {
       console.error(err);
