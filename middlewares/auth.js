@@ -3,7 +3,6 @@ const { JWT_SECRET } = require("../utils/config");
 const { UNAUTHENTICATED_ERROR } = require("../utils/errors");
 
 module.exports = (req, res, next) => {
-  console.log("Test");
   const { authorization } = req.headers;
 
   // error catch missing authorization
