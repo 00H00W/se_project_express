@@ -1,4 +1,7 @@
 const Item = require("../models/clothingItem");
+const BadRequestError = require("../errors/BadRequestError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const NotFoundError = require("../errors/NotFoundError");
 const {
   GENERIC_ERROR,
   BAD_REQUEST_ERROR,
@@ -6,20 +9,15 @@ const {
   FORBIDDEN_ERROR,
 } = require("../utils/errors");
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   Item.find({})
     .then((items) => {
       res.status(200).send(items);
     })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(GENERIC_ERROR)
-        .send({ message: "An error has occurred on the server." });
-    });
+    .catch(next);
 };
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
@@ -28,16 +26,13 @@ const createItem = (req, res) => {
       res.status(201).send(item);
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError")
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-      return res
-        .status(GENERIC_ERROR)
-        .send({ message: "An error has occurred on the server." });
+        next(new BadRequestError("The id string is in an invalid format"));
+      else next(err);
     });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   Item.findById(itemId)
@@ -48,24 +43,18 @@ const deleteItem = (req, res) => {
           .then(() => res.status(200).send(item))
           .catch(console.error);
       } else {
-        res.status(FORBIDDEN_ERROR).send({ message: "Authorization error" });
+        next(new ForbiddenError("Authorization error"));
       }
     })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "CastError")
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-      if (err.name === "DocumentNotFoundError")
-        return res
-          .status(PAGE_NOT_FOUND_ERROR)
-          .send({ message: "Requested resource not found" });
-      return res
-        .status(GENERIC_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      if (err.name === "CastError") next(new BadRequestError(err.message));
+      else if (err.name === "DocumentNotFoundError")
+        next(new NotFoundError("Requested resource not found"));
+      else next(err);
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   Item.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -74,20 +63,14 @@ const likeItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send(item))
     .catch((err) => {
-      console.error(err);
-      if (err.name === "CastError")
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-      if (err.name === "DocumentNotFoundError")
-        return res
-          .status(PAGE_NOT_FOUND_ERROR)
-          .send({ message: "Requested resource not found" });
-      return res
-        .status(GENERIC_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      if (err.name === "CastError") next(new BadRequestError(err.message));
+      else if (err.name === "DocumentNotFoundError")
+        next(new NotFoundError("Requested resource not found"));
+      else next(err);
     });
 };
 
-const unlikeItem = (req, res) => {
+const unlikeItem = (req, res, next) => {
   Item.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -96,16 +79,10 @@ const unlikeItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send(item))
     .catch((err) => {
-      console.error(err);
-      if (err.name === "CastError")
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-      if (err.name === "DocumentNotFoundError")
-        return res
-          .status(PAGE_NOT_FOUND_ERROR)
-          .send({ message: "Requested resource not found" });
-      return res
-        .status(GENERIC_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      if (err.name === "CastError") next(new BadRequestError(err.message));
+      else if (err.name === "DocumentNotFoundError")
+        next(new NotFoundError("Requested resource not found"));
+      else next(err);
     });
 };
 
