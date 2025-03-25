@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { PAGE_NOT_FOUND_ERROR } = require("../utils/errors");
 const { login, createUser } = require("../controllers/users");
 const {
   validateAuthentication,
@@ -8,6 +7,7 @@ const {
 
 const userRouter = require("./users");
 const itemRouter = require("./clothingItems");
+const NotFoundError = require("../errors/NotFoundError");
 
 router.post("/signup", validateUserInfo, createUser);
 router.post("/signin", validateAuthentication, login);
@@ -15,8 +15,8 @@ router.post("/signin", validateAuthentication, login);
 router.use("/users", userRouter);
 router.use("/items", itemRouter);
 
-router.use((req, res) => {
-  res.status(PAGE_NOT_FOUND_ERROR).send({ message: "Page not found" });
+router.use((req, res, next) => {
+  next(new NotFoundError("Page not found"));
 });
 
 module.exports = router;
