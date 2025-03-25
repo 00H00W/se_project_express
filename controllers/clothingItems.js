@@ -2,12 +2,6 @@ const Item = require("../models/clothingItem");
 const BadRequestError = require("../errors/BadRequestError");
 const ForbiddenError = require("../errors/ForbiddenError");
 const NotFoundError = require("../errors/NotFoundError");
-const {
-  GENERIC_ERROR,
-  BAD_REQUEST_ERROR,
-  PAGE_NOT_FOUND_ERROR,
-  FORBIDDEN_ERROR,
-} = require("../utils/errors");
 
 const getItems = (req, res, next) => {
   Item.find({})
