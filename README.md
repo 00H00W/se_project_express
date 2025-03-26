@@ -26,5 +26,7 @@ Functionality:
 
 ## Deployment
 
-`npm run start` — to launch the server
-`npm run dev` — to launch the server with the hot reload feature
+- [Deployment Link](https://wtw.jumpingcrab.com) — wtw.jumpingcrab.com
+
+- `npm run start` — to launch the server
+- `npm run dev` — to launch the server with the hot reload feature
