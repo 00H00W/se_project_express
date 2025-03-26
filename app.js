@@ -17,8 +17,11 @@ mongoose
     console.log("Connected to database.");
   })
   .catch(console.error);
-
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://wtw.jumpingcrab.com",
+  })
+);
 app.use(express.json());
 
 app.use(requestLogger);
